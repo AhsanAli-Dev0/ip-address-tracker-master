@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+crossorigin=""/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <link rel="stylesheet" href="style.css">
+  <title>Frontend Mentor | IP Address Tracker</title>
+
+  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Karla:ital,wght@0,200..800;1,200..800&family=Kumbh+Sans:wght@100..900&family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+   
+    .attribution { font-size: 11px; text-align: center; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+  </style>
+</head>
+<body>
+<main>
+  <div class="container">
+    <div class="row">
+      <div class="content">
+      <div class="input-section">
+      <div class="title">
+        <h1>
+           IP Address Tracker
+        </h1>
+        <div class="input-field">
+          <input type="search" name="search" id="search">
+          <span id="searchbtn"><img src="./images/icon-arrow.svg" alt="icon" aria-placeholder="  Search for any IP address or domain"></span>
+        </div>
+      </div>
+      </div>
+      <div class="output-section">
+        <div class="col-sm-3">
+          <div class="ip">
+          <h5>IP Address</h5>
+          <h2 id="ip"></h2>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="location">
+          <h5>Location</h5>
+          <h2 id="location"></h2>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="time-zone">
+            <h5>Country Code
+     </h5>
+            <h2 id="countryCode"></h2>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="isp">
+            <h5>DMA</h5>
+            <h2 id="dma"></h2>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+  <div id="map"></div>
+</main>
+<footer>
+   <div class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
+    Coded by <a href="https://github.com/AhsanAli-Dev0">Ahsan Ali</a>.
+  </div>
+</footer>
+ 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+crossorigin=""></script>
+  <script>
+    var map =document.getElementById('map')
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+L.marker([51.5, -0.09]).addTo(map)
+    .bindPopup('A pretty CSS popup.<br> Easily customizable.')
+    .openPopup();
+
+// fetching api 
+
+const ip=document.getElementById('ip')
+const userlocation=document.getElementById('location')
+const countryCode=document.getElementById('countryCode')
+const dma=document.getElementById('dma')
+const searchbtn=document.getElementById('searchbtn')
+const search=document.getElementById('search')
+const accessKey='782fbe09fb16e98513ff99c0f7658b97'
+
+
+const url=`http://api.ipapi.com/api/192.212.174.101?access_key=${accessKey}`
+
+fetch(url)
+.then(response => response.json())
+.then(data => {
+  console.log(data)
+  ip.innerText=`${data.ip}`
+  userlocation.innerText=`${data.country_name}`
+  dma.innerText=`${data.dma}`
+  countryCode.innerText=`${data.country_code}`
+})
+
+function getInfo(userIp) {
+ 
+ if(userIp){
+  const url=`http://api.ipapi.com/${userIp}?access_key=${accessKey}`
+  fetch(url)
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+          alert('Error:  incorrect IP');  
+         return
+        }
+  ip.innerText=`${data.ip}`
+  userlocation.innerText=`${data.country_name}`
+  dma.innerText=`${data.dma}`
+  countryCode.innerText=`${data.country_code}`
+  })
+ 
+ }else{
+  alert('Please enter Ip address')
+ }
+}
+searchbtn.addEventListener('click', ()=>{
+  const ip=`${search.value}`
+  console.log(ip);
+  getInfo(ip)
+})
+  </script>
+</body>
+</html>
